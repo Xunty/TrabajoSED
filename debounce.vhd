@@ -37,19 +37,19 @@ begin
 		process(clk)
 		begin
 				if (clk'event and clk = '1') then
-						if (reset = '1') then
+						if (rst = '1') then
 								Q1 <= '0';
 								Q2 <= '0';
 								Q3 <= '0'; 
 						else
-								Q1 <= q_in;
+								Q1 <= ent;
 								Q2 <= Q1;
 								Q3 <= Q2;
 						end if;
 				end if;
 		end process;
 	
-		q_out <= Q1 and Q2 and (not Q3);
+		sal <= Q1 and Q2 and (not Q3);
 
 end Behavioral;
 

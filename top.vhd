@@ -55,11 +55,12 @@ architecture Structural of top is
 				);
 		end component;
 		component mux
+		generic(nbits : integer := 8);
 		port(
-				a : in std_logic_vector(3 downto 0);
-				b : in std_logic_vector(3 downto 0);
+				a : in std_logic_vector(nbits-1 downto 0);
+				b : in std_logic_vector(nbits-1 downto 0);
 				sel : in std_logic;          
-				salida : out std_logic_vector(3 downto 0)
+				salida : out std_logic_vector(nbits-1 downto 0)
 				);
 		end component;
 		component decoder
@@ -77,11 +78,16 @@ architecture Structural of top is
 				);
 		end component;
 		
+		constant digit_i0 : std_logic_vector(3 downto 0) := "1110";
+		constant digit_i1 : std_logic_vector(3 downto 0) := "1101";
+		
 		signal n_clk : std_logic;
 		signal d_din : std_logic;
 		signal registro : std_logic_vector(7 downto 0);
 		signal segment_i0 : std_logic_vector(7 downto 0);
 		signal segment_i1 : std_logic_vector(7 downto 0);
+		signal sel1 : std_logic;
+		signal sel2 : std_logic;
 
 begin
 		Inst_registro_sp: registro_sp PORT MAP(
@@ -95,11 +101,18 @@ begin
 				rst => reset,
 				out_2hz => n_clk
 		);
-		Inst_mux: mux PORT MAP(
+		Mux1: mux PORT MAP(
 				a => segment_i0,
 				b => segment_i1,
-				sel => clock,
+				sel => sel1,
 				salida => segment
+		);
+		Mux2: mux GENERIC MAP(4)
+				PORT MAP(
+				a => digit_i0,
+				b => digit_i1,
+				sel => sel2,
+				salida => digit
 		);
 		Decoder0: decoder PORT MAP(
 				code => registro(3 downto 0),
@@ -115,7 +128,20 @@ begin
 				rst => reset,
 				sal => d_din
 		);
-
+		
+		process(clock, reset)
+		begin
+				if reset = '1' then
+						sel1 <= '0';
+						sel2 <= '0';
+						segment_i0 <= (others => '1');
+						segment_i1 <= (others => '1');
+				elsif rising_edge(clock) then
+						sel1 <= not sel1;
+						sel2 <= not sel2;
+				end if;
+		end process;
+		
 
 end Structural;
 
