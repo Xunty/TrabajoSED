@@ -31,6 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity top is
 		Port ( din : in  STD_LOGIC;
+				dir : in STD_LOGIC;
 				clock : in  STD_LOGIC;
 				reset : in  STD_LOGIC;
 				digit : out  STD_LOGIC_VECTOR (3 downto 0);
@@ -42,6 +43,7 @@ architecture Structural of top is
 		component registro_sp
 		port(
 				ent : in std_logic;
+				dir : in std_logic;
 				clk : in std_logic;
 				rst : in std_logic;          
 				sal : out std_logic_vector(7 downto 0)
@@ -106,6 +108,7 @@ architecture Structural of top is
 begin
 		Inst_registro_sp: registro_sp PORT MAP(
 				ent => d_din,
+				dir => dir,
 				clk => n_clk,
 				rst => reset,
 				sal => registro
