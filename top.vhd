@@ -118,12 +118,6 @@ begin
 				rst => reset,
 				out_2hz => n_clk
 		);
-		--Mux1: mux PORT MAP(
-		--		a => segment_i0,
-		--		b => segment_i1,
-		--		sel => sel1,
-		--		salida => segment
-		--);
 		Inst_mux4: mux4 PORT MAP(
 				a => segment_i0,
 				b => segment_i1,
@@ -131,7 +125,7 @@ begin
 				d => segment_i3,
 				sel => sel1,
 				salida => segment
-	);
+		);
 		Mux2: mux GENERIC MAP(4)
 				PORT MAP(
 				a => digit_i0,
@@ -157,10 +151,10 @@ begin
 		process(clock, reset)
 		begin
 				if reset = '1' then
-						segment_i0 <= "10010001";
-						segment_i1 <= "00000011";
-						segment_i2 <= "11100011";
-						segment_i3 <= "00010001";
+						segment_i0 <= "00010001";
+						segment_i1 <= "11100011";
+						segment_i2 <= "00000011";
+						segment_i3 <= "10010001";
 						if rising_edge(clock) then
 								case sel1 is
 										when "00" =>
@@ -175,9 +169,6 @@ begin
 												sel1 <= "00";
 								end case;
 						end if;
-				
-						--segment_i0 <= (others => '1');
-						--segment_i1 <= (others => '1');
 				elsif rising_edge(clock) then
 						case sel1 is
 								when "00" =>
