@@ -134,8 +134,8 @@ begin
 				if reset = '1' then
 						sel1 <= '0';
 						sel2 <= '0';
-						segment_i0 <= (others => '1');
-						segment_i1 <= (others => '1');
+						--segment_i0 <= (others => '1');
+						--segment_i1 <= (others => '1');
 				elsif rising_edge(clock) then
 						sel1 <= not sel1;
 						sel2 <= not sel2;

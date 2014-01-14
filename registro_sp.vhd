@@ -35,14 +35,9 @@ architecture Behavioral of registro_sp is
 		
 begin
 
-		process(ent)
-		begin
-				if ent = '1' then
-						ent_i <= '1';
-				end if;						
-		end process;
 		
-		process(clk)
+		
+		process(clk, ent, rst)
 		begin
 				if rst = '1' then
 						ent_i <= '0';
@@ -58,6 +53,9 @@ begin
 						sal_i(7) <= sal_i(6);
 						ent_i <= '0';
 				end if;
+				if ent = '1' then
+						ent_i <= '1';
+				end if;	
 		end process;
 		
 		sal <= sal_i;
