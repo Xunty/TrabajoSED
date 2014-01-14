@@ -38,7 +38,7 @@ architecture Behavioral of mux is
 begin
 
 		mux:
-		process(a,b,sel)
+		process(sel,a,b)
 		begin
 				case sel is
 						when '0' =>

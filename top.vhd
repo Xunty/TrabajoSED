@@ -77,6 +77,16 @@ architecture Structural of top is
 				sal : out std_logic
 				);
 		end component;
+		COMPONENT mux4
+		PORT(
+				a : IN std_logic_vector(7 downto 0);
+				b : IN std_logic_vector(7 downto 0);
+				c : IN std_logic_vector(7 downto 0);
+				d : IN std_logic_vector(7 downto 0);
+				sel : IN std_logic_vector(1 downto 0);          
+				salida : OUT std_logic_vector(7 downto 0)
+				);
+		END COMPONENT;
 		
 		constant digit_i0 : std_logic_vector(3 downto 0) := "1110";
 		constant digit_i1 : std_logic_vector(3 downto 0) := "1101";
@@ -86,8 +96,12 @@ architecture Structural of top is
 		signal registro : std_logic_vector(7 downto 0);
 		signal segment_i0 : std_logic_vector(7 downto 0);
 		signal segment_i1 : std_logic_vector(7 downto 0);
-		signal sel1 : std_logic;
+		signal segment_i2 : std_logic_vector(7 downto 0);
+		signal segment_i3 : std_logic_vector(7 downto 0);
+		signal sel1 : std_logic_vector(1 downto 0);
 		signal sel2 : std_logic;
+		signal seg0 : std_logic_vector(7 downto 0):="11111111";
+		signal seg1 : std_logic_vector(7 downto 0):="11111111";
 
 begin
 		Inst_registro_sp: registro_sp PORT MAP(
@@ -101,12 +115,20 @@ begin
 				rst => reset,
 				out_2hz => n_clk
 		);
-		Mux1: mux PORT MAP(
+		--Mux1: mux PORT MAP(
+		--		a => segment_i0,
+		--		b => segment_i1,
+		--		sel => sel1,
+		--		salida => segment
+		--);
+		Inst_mux4: mux4 PORT MAP(
 				a => segment_i0,
 				b => segment_i1,
+				c => segment_i2,
+				d => segment_i3,
 				sel => sel1,
 				salida => segment
-		);
+	);
 		Mux2: mux GENERIC MAP(4)
 				PORT MAP(
 				a => digit_i0,
@@ -116,11 +138,11 @@ begin
 		);
 		Decoder0: decoder PORT MAP(
 				code => registro(3 downto 0),
-				d_code => segment_i0(7 downto 1)
+				d_code => seg0(7 downto 1)
 		);
 		Decoder1: decoder PORT MAP(
 				code => registro(7 downto 4),
-				d_code => segment_i1(7 downto 1)
+				d_code => seg1(7 downto 1)
 		);
 		Inst_debounce: debounce PORT MAP(
 				ent => din,
@@ -132,13 +154,43 @@ begin
 		process(clock, reset)
 		begin
 				if reset = '1' then
-						sel1 <= '0';
-						sel2 <= '0';
+						segment_i0 <= "10010001";
+						segment_i1 <= "00000011";
+						segment_i2 <= "11100011";
+						segment_i3 <= "00010001";
+						if rising_edge(clock) then
+								case sel1 is
+										when "00" =>
+												sel1 <= "01";
+										when "01" =>
+												sel1 <= "10";
+										when "10" =>
+												sel1 <= "11";
+										when "11" =>
+												sel1 <= "00";
+										when others =>
+												sel1 <= "00";
+								end case;
+						end if;
+				
 						--segment_i0 <= (others => '1');
 						--segment_i1 <= (others => '1');
 				elsif rising_edge(clock) then
-						sel1 <= not sel1;
+						case sel1 is
+								when "00" =>
+										sel1 <= "01";
+								when "01" =>
+										sel1 <= "10";
+								when "10" =>
+										sel1 <= "11";
+								when "11" =>
+										sel1 <= "00";
+								when others =>
+										sel1 <= "00";
+						end case;
 						sel2 <= not sel2;
+						segment_i0<=seg0;
+						segment_i1<=seg1;
 				end if;
 		end process;
 		

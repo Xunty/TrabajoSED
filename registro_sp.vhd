@@ -23,6 +23,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity registro_sp is
 		Port ( ent : in  STD_LOGIC;
+				dir : in STD_LOGIC;
 				clk : in  STD_LOGIC;
 				rst : in  STD_LOGIC;
 				sal : out  STD_LOGIC_VECTOR (7 downto 0));
@@ -37,21 +38,33 @@ begin
 
 		
 		
-		process(clk, ent, rst)
+		process(clk, ent, rst, dir)
 		begin
 				if rst = '1' then
 						ent_i <= '0';
 						sal_i <= (others => '0');						
 				elsif rising_edge(clk) then
-						sal_i(0) <= ent_i;
-						sal_i(1) <= sal_i(0);
-						sal_i(2) <= sal_i(1);
-						sal_i(3) <= sal_i(2);
-						sal_i(4) <= sal_i(3);
-						sal_i(5) <= sal_i(4);
-						sal_i(6) <= sal_i(5);
-						sal_i(7) <= sal_i(6);
-						ent_i <= '0';
+						if dir = '0' then
+								sal_i(0) <= ent_i;
+								sal_i(1) <= sal_i(0);
+								sal_i(2) <= sal_i(1);
+								sal_i(3) <= sal_i(2);
+								sal_i(4) <= sal_i(3);
+								sal_i(5) <= sal_i(4);
+								sal_i(6) <= sal_i(5);
+								sal_i(7) <= sal_i(6);
+								ent_i <= '0';
+						elsif dir = '1' then
+								sal_i(7) <= ent_i;
+								sal_i(6) <= sal_i(7);
+								sal_i(5) <= sal_i(6);
+								sal_i(4) <= sal_i(5);
+								sal_i(3) <= sal_i(4);
+								sal_i(2) <= sal_i(3);
+								sal_i(1) <= sal_i(2);
+								sal_i(0) <= sal_i(1);
+								ent_i <= '0';
+						end if;
 				end if;
 				if ent = '1' then
 						ent_i <= '1';
