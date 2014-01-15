@@ -92,6 +92,8 @@ architecture Structural of top is
 		
 		constant digit_i0 : std_logic_vector(3 downto 0) := "1110";
 		constant digit_i1 : std_logic_vector(3 downto 0) := "1101";
+		constant digit_i2 : std_logic_vector(3 downto 0) := "1011";
+		constant digit_i3 : std_logic_vector(3 downto 0) := "0111";
 		
 		signal n_clk : std_logic;
 		signal d_din : std_logic;
@@ -101,7 +103,6 @@ architecture Structural of top is
 		signal segment_i2 : std_logic_vector(7 downto 0);
 		signal segment_i3 : std_logic_vector(7 downto 0);
 		signal sel1 : std_logic_vector(1 downto 0);
-		signal sel2 : std_logic;
 		signal seg0 : std_logic_vector(7 downto 0):="11111111";
 		signal seg1 : std_logic_vector(7 downto 0):="11111111";
 
@@ -126,11 +127,13 @@ begin
 				sel => sel1,
 				salida => segment
 		);
-		Mux2: mux GENERIC MAP(4)
+		Mux2: mux4 GENERIC MAP(4)
 				PORT MAP(
 				a => digit_i0,
 				b => digit_i1,
-				sel => sel2,
+				c => digit_i2,
+				d => digit_i3,
+				sel => sel1,
 				salida => digit
 		);
 		Decoder0: decoder PORT MAP(
@@ -182,9 +185,10 @@ begin
 								when others =>
 										sel1 <= "00";
 						end case;
-						sel2 <= not sel2;
 						segment_i0<=seg0;
 						segment_i1<=seg1;
+						segment_i2<="11111111";
+						segment_i3<="11111111";
 				end if;
 		end process;
 		
