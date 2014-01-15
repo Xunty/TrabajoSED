@@ -56,15 +56,6 @@ architecture Structural of top is
 				out_2hz : out std_logic
 				);
 		end component;
-		component mux
-		generic(nbits : integer := 8);
-		port(
-				a : in std_logic_vector(nbits-1 downto 0);
-				b : in std_logic_vector(nbits-1 downto 0);
-				sel : in std_logic;          
-				salida : out std_logic_vector(nbits-1 downto 0)
-				);
-		end component;
 		component decoder
 		port(
 				code : in std_logic_vector(3 downto 0);          
@@ -80,13 +71,14 @@ architecture Structural of top is
 				);
 		end component;
 		COMPONENT mux4
+		GENERIC(nbits : integer := 8);
 		PORT(
-				a : IN std_logic_vector(7 downto 0);
-				b : IN std_logic_vector(7 downto 0);
-				c : IN std_logic_vector(7 downto 0);
-				d : IN std_logic_vector(7 downto 0);
+				a : IN std_logic_vector(nbits - 1 downto 0);
+				b : IN std_logic_vector(nbits - 1 downto 0);
+				c : IN std_logic_vector(nbits - 1 downto 0);
+				d : IN std_logic_vector(nbits - 1 downto 0);
 				sel : IN std_logic_vector(1 downto 0);          
-				salida : OUT std_logic_vector(7 downto 0)
+				salida : OUT std_logic_vector(nbits - 1 downto 0)
 				);
 		END COMPONENT;
 		
