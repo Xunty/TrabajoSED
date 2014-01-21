@@ -19,6 +19,8 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -31,6 +33,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity top is
 		Port ( din : in  STD_LOGIC;
+				bien : in STD_LOGIC;
 				dir : in STD_LOGIC;
 				clock : in  STD_LOGIC;
 				reset : in  STD_LOGIC;
@@ -50,6 +53,7 @@ architecture Structural of top is
 				);
 		end component;
 		component prescaler
+		generic(max : unsigned (23 downto 0):= X"BEBC20");--12500000
 		port(
 				in_50mhz : in std_logic;
 				rst : in std_logic;          
@@ -87,7 +91,8 @@ architecture Structural of top is
 		constant digit_i2 : std_logic_vector(3 downto 0) := "1011";
 		constant digit_i3 : std_logic_vector(3 downto 0) := "0111";
 		
-		signal n_clk : std_logic;
+		signal n2_clk : std_logic;
+		signal n200_clk : std_logic;
 		signal d_din : std_logic;
 		signal registro : std_logic_vector(7 downto 0);
 		signal segment_i0 : std_logic_vector(7 downto 0);
@@ -102,14 +107,20 @@ begin
 		Inst_registro_sp: registro_sp PORT MAP(
 				ent => d_din,
 				dir => dir,
-				clk => n_clk,
+				clk => n2_clk,
 				rst => reset,
 				sal => registro
 		);
 		Inst_prescaler: prescaler PORT MAP(
 				in_50mhz => clock,
 				rst => reset,
-				out_2hz => n_clk
+				out_2hz => n2_clk
+		);
+		Inst_prescaler2: prescaler GENERIC MAP(X"01E848")--125000
+		PORT MAP(
+				in_50mhz => clock,
+				rst => reset,
+				out_2hz => n200_clk
 		);
 		Inst_mux4: mux4 PORT MAP(
 				a => segment_i0,
@@ -143,14 +154,10 @@ begin
 				sal => d_din
 		);
 		
-		process(clock, reset)
+		
+		sincronizador:process(n200_clk)
 		begin
-				if reset = '1' then
-						segment_i0 <= "00010001";
-						segment_i1 <= "11100011";
-						segment_i2 <= "00000011";
-						segment_i3 <= "10010001";
-						if rising_edge(clock) then
+				if rising_edge(n200_clk) then
 								case sel1 is
 										when "00" =>
 												sel1 <= "01";
@@ -163,20 +170,42 @@ begin
 										when others =>
 												sel1 <= "00";
 								end case;
-						end if;
-				elsif rising_edge(clock) then
-						case sel1 is
-								when "00" =>
-										sel1 <= "01";
-								when "01" =>
-										sel1 <= "10";
-								when "10" =>
-										sel1 <= "11";
-								when "11" =>
-										sel1 <= "00";
-								when others =>
-										sel1 <= "00";
-						end case;
+				end if;
+		end process;
+		process(n200_clk, bien)
+		begin
+				if bien = '1' then
+						segment_i0 <= "00010001";
+						segment_i1 <= "11100011";
+						segment_i2 <= "00000011";
+						segment_i3 <= "10010001";
+--						if rising_edge(n100_clk) then
+--								case sel1 is
+--										when "00" =>
+--												sel1 <= "01";
+--										when "01" =>
+--												sel1 <= "10";
+--										when "10" =>
+--												sel1 <= "11";
+--										when "11" =>
+--												sel1 <= "00";
+--										when others =>
+--												sel1 <= "00";
+--								end case;
+--						end if;
+				elsif rising_edge(n200_clk) then
+--						case sel1 is
+--								when "00" =>
+--										sel1 <= "01";
+--								when "01" =>
+--										sel1 <= "10";
+--								when "10" =>
+--										sel1 <= "11";
+--								when "11" =>
+--										sel1 <= "00";
+--								when others =>
+--										sel1 <= "00";
+--						end case;
 						segment_i0<=seg0;
 						segment_i1<=seg1;
 						segment_i2<="11111111";

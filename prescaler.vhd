@@ -28,6 +28,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --en una señal de reloj de 2 hz
 
 entity prescaler is
+		Generic( max : unsigned(23 downto 0):= X"BEBC20");--12500000
 		Port ( in_50mhz : in  STD_LOGIC;
 				rst : in  STD_LOGIC;
 				out_2hz : out  STD_LOGIC);
@@ -44,11 +45,11 @@ begin
 						out_2hz_i   <= '0';
 						prescaler   <= (others => '0');
 				elsif rising_edge(in_50mhz) then
-						if prescaler = 50000000/4 then
+						if prescaler = max then
 								prescaler   <= (others => '0');
 								out_2hz_i   <= not out_2hz_i;
 						else
-								prescaler <= prescaler + 1;
+								prescaler <= prescaler + "1";
 						end if;
 				end if;
 		end process;

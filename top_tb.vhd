@@ -62,7 +62,7 @@ ARCHITECTURE behavior OF top_tb IS
    signal segment : std_logic_vector(7 downto 0);
 
    -- Clock period definitions
-   constant clock_period : time := 20 ns;
+   constant clock_period : time := 2 ns;
  
 BEGIN
  
@@ -90,10 +90,16 @@ BEGIN
    stim_proc: process
    begin		
       -- hold reset state for 100 ns.
+		reset <= '1','0' after 330 ns;
+		din <= '1' after 360 ns,
+					'0' after 400 ns,
+					'1' after 440 ns,
+					'0' after 500 ns,
+					'1' after 520 ns,
+					'0' after 600 ns,
+					'1' after 640 ns;
 		
-		
-		
-		wait for 100000 ns;
+		wait for 1000000000 ns;
 		
 		assert false
 		report"fin de la simulacion"
